@@ -5,7 +5,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: '前端学习项目 - Next.js 14 + TypeScript',
+  title: '实用小工具 - Next.js 14 + TypeScript',
   description: '一个用于前端开发者学习调试的完整项目，包含现代前端技术栈',
 }
 

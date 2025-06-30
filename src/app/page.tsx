@@ -7,6 +7,7 @@ import TodoList from '@/components/TodoList'
 import CanvasEditor from '@/components/CanvasEditor'
 import RadixUIDemo from '@/components/RadixUIDemo'
 import HeadlessUIDemo from '@/components/HeadlessUIDemo'
+import ClientOnly from '@/components/ClientOnly'
 import { Button } from '@/components/ui/Button'
 
 type TabType = 'todo' | 'canvas' | 'radix' | 'headless' | 'about'
@@ -26,13 +27,25 @@ const HomePage: React.FC = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'todo':
-        return <TodoList />
+        return (
+          <ClientOnly fallback={<div className="text-center py-8">加载中...</div>}>
+            <TodoList />
+          </ClientOnly>
+        )
       case 'canvas':
         return <CanvasEditor />
       case 'radix':
-        return <RadixUIDemo />
+        return (
+          <ClientOnly fallback={<div className="text-center py-8">加载中...</div>}>
+            <RadixUIDemo />
+          </ClientOnly>
+        )
       case 'headless':
-        return <HeadlessUIDemo />
+        return (
+          <ClientOnly fallback={<div className="text-center py-8">加载中...</div>}>
+            <HeadlessUIDemo />
+          </ClientOnly>
+        )
       case 'about':
         return (
           <div className="max-w-4xl mx-auto p-6">
@@ -130,7 +143,11 @@ const HomePage: React.FC = () => {
           </div>
         )
       default:
-        return <TodoList />
+        return (
+          <ClientOnly fallback={<div className="text-center py-8">加载中...</div>}>
+            <TodoList />
+          </ClientOnly>
+        )
     }
   }
 
@@ -147,15 +164,17 @@ const HomePage: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-                className="flex items-center gap-2"
-              >
-                {theme === 'dark' ? '🌞' : '🌙'}
-                {theme === 'dark' ? '浅色' : '深色'}
-              </Button>
+              <ClientOnly fallback={<div className="w-20 h-8 bg-gray-200 rounded animate-pulse" />}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTheme}
+                  className="flex items-center gap-2"
+                >
+                  {theme === 'dark' ? '🌞' : '🌙'}
+                  {theme === 'dark' ? '浅色' : '深色'}
+                </Button>
+              </ClientOnly>
             </div>
           </div>
         </div>

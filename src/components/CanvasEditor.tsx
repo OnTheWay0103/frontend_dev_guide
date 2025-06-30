@@ -1,19 +1,27 @@
 'use client'
 
 import React, { useEffect, useRef, useState } from 'react'
-import { fabric } from 'fabric'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/Button'
 
+// 动态导入 fabric.js，避免服务器端渲染问题
 const CanvasEditor: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const fabricCanvasRef = useRef<fabric.Canvas | null>(null)
+  const fabricCanvasRef = useRef<any>(null)
   const [selectedTool, setSelectedTool] = useState<'select' | 'rect' | 'circle' | 'text' | 'line'>('select')
   const [canvasHistory, setCanvasHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
+  const [isClient, setIsClient] = useState(false)
 
   useEffect(() => {
-    if (canvasRef.current && !fabricCanvasRef.current) {
+    setIsClient(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isClient || !canvasRef.current || fabricCanvasRef.current) return
+
+    // 动态导入 fabric.js
+    import('fabric').then(({ fabric }) => {
       const canvas = new fabric.Canvas(canvasRef.current, {
         width: 800,
         height: 600,
@@ -33,8 +41,10 @@ const CanvasEditor: React.FC = () => {
       return () => {
         canvas.dispose()
       }
-    }
-  }, [])
+    }).catch(error => {
+      console.error('Failed to load Fabric.js:', error)
+    })
+  }, [isClient])
 
   const saveCanvasState = () => {
     if (fabricCanvasRef.current) {
@@ -56,60 +66,64 @@ const CanvasEditor: React.FC = () => {
     }
   }
 
-  const addRectangle = () => {
-    if (fabricCanvasRef.current) {
-      const rect = new fabric.Rect({
-        left: 100,
-        top: 100,
-        width: 100,
-        height: 100,
-        fill: '#3b82f6',
-        stroke: '#1d4ed8',
-        strokeWidth: 2,
-      })
-      fabricCanvasRef.current.add(rect)
-      fabricCanvasRef.current.setActiveObject(rect)
-    }
+  const addRectangle = async () => {
+    if (!fabricCanvasRef.current) return
+    
+    const { fabric } = await import('fabric')
+    const rect = new fabric.Rect({
+      left: 100,
+      top: 100,
+      width: 100,
+      height: 100,
+      fill: '#3b82f6',
+      stroke: '#1d4ed8',
+      strokeWidth: 2,
+    })
+    fabricCanvasRef.current.add(rect)
+    fabricCanvasRef.current.setActiveObject(rect)
   }
 
-  const addCircle = () => {
-    if (fabricCanvasRef.current) {
-      const circle = new fabric.Circle({
-        left: 200,
-        top: 100,
-        radius: 50,
-        fill: '#10b981',
-        stroke: '#059669',
-        strokeWidth: 2,
-      })
-      fabricCanvasRef.current.add(circle)
-      fabricCanvasRef.current.setActiveObject(circle)
-    }
+  const addCircle = async () => {
+    if (!fabricCanvasRef.current) return
+    
+    const { fabric } = await import('fabric')
+    const circle = new fabric.Circle({
+      left: 200,
+      top: 100,
+      radius: 50,
+      fill: '#10b981',
+      stroke: '#059669',
+      strokeWidth: 2,
+    })
+    fabricCanvasRef.current.add(circle)
+    fabricCanvasRef.current.setActiveObject(circle)
   }
 
-  const addText = () => {
-    if (fabricCanvasRef.current) {
-      const text = new fabric.Text('点击编辑文字', {
-        left: 100,
-        top: 200,
-        fontSize: 20,
-        fill: '#374151',
-        fontFamily: 'Arial',
-      })
-      fabricCanvasRef.current.add(text)
-      fabricCanvasRef.current.setActiveObject(text)
-    }
+  const addText = async () => {
+    if (!fabricCanvasRef.current) return
+    
+    const { fabric } = await import('fabric')
+    const text = new fabric.Text('点击编辑文字', {
+      left: 100,
+      top: 200,
+      fontSize: 20,
+      fill: '#374151',
+      fontFamily: 'Arial',
+    })
+    fabricCanvasRef.current.add(text)
+    fabricCanvasRef.current.setActiveObject(text)
   }
 
-  const addLine = () => {
-    if (fabricCanvasRef.current) {
-      const line = new fabric.Line([50, 50, 200, 200], {
-        stroke: '#ef4444',
-        strokeWidth: 3,
-      })
-      fabricCanvasRef.current.add(line)
-      fabricCanvasRef.current.setActiveObject(line)
-    }
+  const addLine = async () => {
+    if (!fabricCanvasRef.current) return
+    
+    const { fabric } = await import('fabric')
+    const line = new fabric.Line([50, 50, 200, 200], {
+      stroke: '#ef4444',
+      strokeWidth: 3,
+    })
+    fabricCanvasRef.current.add(line)
+    fabricCanvasRef.current.setActiveObject(line)
   }
 
   const deleteSelected = () => {
@@ -153,6 +167,23 @@ const CanvasEditor: React.FC = () => {
       link.href = dataURL
       link.click()
     }
+  }
+
+  if (!isClient) {
+    return (
+      <div className="max-w-6xl mx-auto p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card"
+        >
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">Canvas 画板编辑器</h1>
+          <div className="flex justify-center items-center h-96">
+            <div className="text-gray-500">正在加载 Canvas 编辑器...</div>
+          </div>
+        </motion.div>
+      </div>
+    )
   }
 
   return (
