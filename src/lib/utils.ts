@@ -12,14 +12,22 @@ export function generateId(): string {
 }
 
 // 格式化日期
-export function formatDate(date: Date): string {
+export function formatDate(date: Date | string | undefined | null): string {
+  if (!date) return ''
+  let d: Date
+  if (typeof date === 'string') {
+    d = new Date(date)
+  } else {
+    d = date
+  }
+  if (!(d instanceof Date) || isNaN(d.getTime())) return ''
   return new Intl.DateTimeFormat('zh-CN', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-  }).format(date)
+  }).format(d)
 }
 
 // 防抖函数

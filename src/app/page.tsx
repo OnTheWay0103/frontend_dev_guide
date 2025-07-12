@@ -154,12 +154,12 @@ const HomePage: React.FC = () => {
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'dark' : ''}`}>
       {/* 导航栏 */}
-      <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <nav className="bg-white/80 backdrop-blur-md shadow-soft border-b border-gray-200/50 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900">
-                实用小工具
+              <h1 className="text-xl font-bold bg-gradient-to-r from-primary-600 to-purple-600 bg-clip-text text-transparent">
+                ✨ 实用小工具
               </h1>
             </div>
             
@@ -169,10 +169,10 @@ const HomePage: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={toggleTheme}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 hover:bg-gray-100 rounded-lg"
                 >
                   {theme === 'dark' ? '🌞' : '🌙'}
-                  {theme === 'dark' ? '浅色' : '深色'}
+                  <span className="hidden sm:inline">{theme === 'dark' ? '浅色' : '深色'}</span>
                 </Button>
               </ClientOnly>
             </div>
@@ -181,17 +181,17 @@ const HomePage: React.FC = () => {
       </nav>
 
       {/* 标签导航 */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-white/60 backdrop-blur-sm border-b border-gray-200/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 overflow-x-auto">
+          <div className="flex space-x-8 overflow-x-auto scrollbar-hide">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200 whitespace-nowrap ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'border-primary-500 text-primary-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    ? 'border-primary-500 text-primary-600 bg-primary-50/50'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 hover:bg-gray-50/50'
                 }`}
               >
                 <span className="mr-2">{tab.icon}</span>
@@ -203,7 +203,7 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* 主内容区域 */}
-      <main className="bg-gray-50 min-h-screen">
+      <main className="gradient-bg min-h-screen">
         {renderContent()}
       </main>
     </div>
